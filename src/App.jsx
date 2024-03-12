@@ -4,6 +4,7 @@ import viteLogo from '/vite.svg'
 import ProjectSideBare from './components/ProjectSideBar'
 import NewProject from './components/NewProject'
 import ProjectNoteSelected from './components/ProjectNoteSelected'
+import SelectedProject from './components/SelectedProject'
 
 function App() {
   const [projectState, setProjectState] = useState({
@@ -19,6 +20,24 @@ function App() {
       }
     })
   }
+
+  function handleSelectedProject(id){
+    setProjectState((prevState)=>{
+      return{
+        ...prevState,
+        selectedProjectId: id,
+      }
+    })
+  }
+  
+  function handleCancelProject(){
+    setProjectState((prevState)=>{
+      return{
+        ...prevState,
+        selectedProjectId: undefined,
+      }
+    })
+  }
    
   function handleAddProject(projectData){
     setProjectState(prevState =>{
@@ -28,25 +47,28 @@ function App() {
       };
       return {
         ...prevState, 
+        selectedProjectId: undefined,
         projects:[...prevState.projects, newProject]
       };
     })
   }
+   
+  const selectedProject = projectState.projects.find((project)=> project.id === projectState.selectedProjectId);
+  console.log("selected", selectedProject)
 
-// console.log(projectState.projects)
-  let projectContent;
+  let projectContent = <SelectedProject project={selectedProject} />;
 
   if (projectState.selectedProjectId === null){
-    projectContent = <NewProject onAddProjectDetail={handleAddProject}/> 
+    projectContent = <NewProject onAddProjectDetail={handleAddProject} onCancel={handleCancelProject}/> 
   }else if (projectState.selectedProjectId === undefined){
     projectContent = <ProjectNoteSelected onStartaddProject ={handleStartProject} />
   }
   return (
     <main className="h-screen my-8 flex gap-8">
-    <ProjectSideBare onStartaddProject ={handleStartProject} />
+    <ProjectSideBare onStartaddProject={handleStartProject} projects={projectState.projects} onSelectedProject={handleSelectedProject} />
     {projectContent}
     </main>
   )
-}
+  }
 
 export default App
